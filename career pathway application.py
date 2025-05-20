@@ -38,6 +38,7 @@ df_employee = pd.DataFrame({
     "Paygrade": ["PG2", "PG3", "PG4"]
 })
 
+
 # Streamlit App
 st.set_page_config(layout="wide")
 st.title("Career Pathway Portal (Interactive)")
@@ -46,14 +47,14 @@ st.markdown("""
 This portal allows employees to visualize career progression and identify skill gaps for their desired roles.
 """)
 
-# Step 1: User inputs Employee ID
-employee_id = st.text_input("Enter your Employee ID:", value="E101")
+# Step 1: User inputs PS Number
+employee_id = int(st.text_input("Enter your PS Number:", value="8"))
 
-if employee_id in df_employee["Employee ID"].values:
-    employee_row = df_employee[df_employee["Employee ID"] == employee_id].iloc[0]
+if employee_id in df_employee["PS Number"].values:
+    employee_row = df_employee[df_employee["PS Number"] == employee_id].iloc[0]
     st.success(f"Welcome, {employee_row['Name']}! Your paygrade is: {employee_row['Paygrade']}")
 else:
-    st.warning("Employee ID not found. Using default user.")
+    st.warning("PS Number not found. Using default user.")
     employee_row = df_employee.iloc[0]
 
 # Step 2: User selects current role based on paygrade
