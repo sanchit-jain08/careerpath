@@ -29,7 +29,6 @@ skill_matrix_data = {"Skill": skills}
 for index, row in role_df.iterrows():
     col_name = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
     skill_matrix_data[col_name] = [i + (index % 5) if (i + index) % 4 != 0 else '-' for i in range(5)]
-
 skill_df = pd.DataFrame(skill_matrix_data)
 
 # Employee DataFrame with Paygrade
@@ -62,9 +61,10 @@ available_roles = role_df[role_df['Paygrade'] == employee_row['Paygrade']]['Role
 current_role = st.selectbox("Select your current role (based on paygrade):", available_roles)
 
 # Get current role skill profile
-current_info = role_df[role_df['Role'] == current_role].iloc[0]
+current_info = role_df[role_df['Role'] == current_role]
+current_info = current_info[current_info['Paygrade'] == employee_row['Paygrade']].iloc[0]
 current_col = f"{current_info['Role']} & {current_info['Band']} & {current_info['Paygrade']}"
-current_skills = skill_df[["Skill", current_col]].rename(columns={current_col: "Current Proficiency"})
+current_level = current_info['Paygrade Level']
 
 # Group roles by paygrade level
 grouped = role_df.groupby("Paygrade Level")
@@ -73,7 +73,6 @@ st.markdown("### Career Pathway")
 
 # Step 3: Display career path with role highlights and interactivity
 selected_new_role = None
-current_level = current_info['Paygrade Level']
 
 for level in sorted(grouped.groups.keys()):
     st.markdown(f"#### Paygrade Level {level}")
@@ -81,26 +80,29 @@ for level in sorted(grouped.groups.keys()):
     cols = st.columns(len(roles))
 
     for i, (_, row) in enumerate(roles.iterrows()):
-        highlight = row["Role"] == current_role
+        role_key = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
+        highlight = role_key == current_col
+
         with cols[i].expander(f"{'⭐ ' if highlight else ''}{row['Role']}"):
-            role_key = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
             skill_info = skill_df[["Skill", role_key]].rename(columns={role_key: "Proficiency Required"})
-            # Filter out skills not required (marked with '-')
             skill_info = skill_info[skill_info["Proficiency Required"] != '-']
             st.table(skill_info)
 
-            # Only allow comparison if role is at or above current level
             if not highlight and row["Paygrade Level"] >= current_level:
-                if st.button(f"Compare Skills with {row['Role']}", key=f"compare_{row['Role']}"):
-                    selected_new_role = row['Role']
-                    selected_new_level = row['Paygrade Level']
+                if st.button(f"Compare Skills with {row['Role']}", key=f"compare_{role_key}"):
+                    selected_new_role = {
+                        "Role": row['Role'],
+                        "Band": row['Band'],
+                        "Paygrade": row['Paygrade'],
+                        "Level": row['Paygrade Level']
+                    }
 
 # Step 4: Skill Gap Analysis (only for roles at or above current level)
 if selected_new_role:
-    new_info = role_df[role_df['Role'] == selected_new_role].iloc[0]
-    if new_info["Paygrade Level"] >= current_level:
+    new_info = selected_new_role
+    if new_info["Level"] >= current_level:
         st.markdown("---")
-        st.subheader(f"Skill Gap Analysis: {current_role} → {selected_new_role}")
+        st.subheader(f"Skill Gap Analysis: {current_role} → {new_info['Role']}")
         new_col = f"{new_info['Role']} & {new_info['Band']} & {new_info['Paygrade']}"
 
         gap_df = skill_df[["Skill", current_col, new_col]].copy()
