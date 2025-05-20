@@ -48,7 +48,7 @@ This portal allows employees to visualize career progression and identify skill 
 """)
 
 # Step 1: User inputs Employee ID
-employee_id = int(st.text_input("Enter your Employee ID:", value="8"))
+employee_id = st.text_input("Enter your Employee ID:", value="E101")
 
 if employee_id in df_employee["Employee ID"].values:
     employee_row = df_employee[df_employee["Employee ID"] == employee_id].iloc[0]
