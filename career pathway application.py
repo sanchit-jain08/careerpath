@@ -5,20 +5,20 @@ import pandas as pd
 roles_data = {
     "Role": [
         "Junior Developer", "Developer", "Senior Developer", "Lead Developer", "Architect",
-        "Analyst", "Senior Analyst", "Manager", "Senior Manager", "Director"
+        "Analyst", "Senior Analyst", "Manager", "Senior Manager", "Director", "Developer"
     ],
     "Department": [
         "IT", "IT", "IT", "IT", "IT",
-        "Business", "Business", "Management", "Management", "Executive"
+        "Business", "Business", "Management", "Management", "Executive", "IT"
     ],
     "Paygrade": [
         "PG1", "PG2", "PG3", "PG4", "PG5",
-        "PG1", "PG2", "PG3", "PG4", "PG5"
+        "PG1", "PG2", "PG3", "PG4", "PG5","PG3"
     ],
-    "Paygrade Level": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+    "Paygrade Level": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5,3],
     "Band": [
         "B1", "B1", "B2", "B2", "B3",
-        "B1", "B1", "B2", "B2", "B3"
+        "B1", "B1", "B2", "B2", "B3", "B2"
     ]
 }
 role_df = pd.DataFrame(roles_data)
