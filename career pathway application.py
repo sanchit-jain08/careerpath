@@ -73,6 +73,8 @@ st.markdown("### Career Pathway")
 
 # Step 3: Display career path with role highlights and interactivity
 selected_new_role = None
+current_level = current_info['Paygrade Level']
+
 for level in sorted(grouped.groups.keys()):
     st.markdown(f"#### Paygrade Level {level}")
     roles = grouped.get_group(level)
@@ -85,26 +87,35 @@ for level in sorted(grouped.groups.keys()):
             skill_info = skill_df[["Skill", role_key]].rename(columns={role_key: "Proficiency Required"})
             st.table(skill_info)
 
-            if not highlight:
+            # Only allow comparison if role is at or above current level
+            if not highlight and row["Paygrade Level"] >= current_level:
                 if st.button(f"Compare Skills with {row['Role']}", key=f"compare_{row['Role']}"):
                     selected_new_role = row['Role']
+                    selected_new_level = row['Paygrade Level']
 
-# Step 4: Skill Gap Analysis
+# Step 4: Skill Gap Analysis (only for roles at or above current level)
 if selected_new_role:
-    st.markdown("---")
-    st.subheader(f"Skill Gap Analysis: {current_role} → {selected_new_role}")
     new_info = role_df[role_df['Role'] == selected_new_role].iloc[0]
-    new_col = f"{new_info['Role']} & {new_info['Band']} & {new_info['Paygrade']}"
+    if new_info["Paygrade Level"] >= current_level:
+        st.markdown("---")
+        st.subheader(f"Skill Gap Analysis: {current_role} → {selected_new_role}")
+        new_col = f"{new_info['Role']} & {new_info['Band']} & {new_info['Paygrade']}"
 
-    gap_df = skill_df[["Skill", current_col, new_col]].copy()
-    gap_df.columns = ["Skill", "Your Level", "Required Level"]
+        gap_df = skill_df[["Skill", current_col, new_col]].copy()
+        gap_df.columns = ["Skill", "Your Level", "Required Level"]
 
-    def compute_gap(row):
-        if row["Required Level"] == '-' or row["Your Level"] == '-':
-            return "New Skill" if row["Your Level"] == '-' and row["Required Level"] != '-' else "N/A"
-        return int(row["Required Level"]) - int(row["Your Level"])
+        def compute_gap(row):
+            if row["Required Level"] == '-' and row["Your Level"] != '-':
+                return "Good to have"
+            elif row["Required Level"] != '-' and row["Your Level"] == '-':
+                return "New Skill"
+            elif row["Required Level"] == '-' and row["Your Level"] == '-':
+                return "Good to have"
+            return int(row["Required Level"]) - int(row["Your Level"])
 
-    gap_df["Gap"] = gap_df.apply(compute_gap, axis=1)
-    st.table(gap_df)
+        gap_df["Gap"] = gap_df.apply(compute_gap, axis=1)
+        st.table(gap_df)
+    else:
+        st.warning("Cannot compare roles below your current paygrade level.")
 else:
-    st.info("Click on any role above to compare skill requirements with your current role.")
+    st.info("Click on any eligible role above to compare skill requirements with your current role.")
