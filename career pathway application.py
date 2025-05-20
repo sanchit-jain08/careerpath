@@ -85,6 +85,8 @@ for level in sorted(grouped.groups.keys()):
         with cols[i].expander(f"{'⭐ ' if highlight else ''}{row['Role']}"):
             role_key = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
             skill_info = skill_df[["Skill", role_key]].rename(columns={role_key: "Proficiency Required"})
+            # Filter out skills not required (marked with '-')
+            skill_info = skill_info[skill_info["Proficiency Required"] != '-']
             st.table(skill_info)
 
             # Only allow comparison if role is at or above current level
