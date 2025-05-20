@@ -23,21 +23,21 @@ roles_data = {
 }
 role_df = pd.DataFrame(roles_data)
 
-# Skill Matrix Data
+# Skill Matrix Data with '-' indicating skill not required
 skills = ["Python", "Data Analysis", "Project Management", "System Design", "Communication"]
 skill_matrix_data = {"Skill": skills}
 for index, row in role_df.iterrows():
     col_name = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
-    skill_matrix_data[col_name] = [i + (index % 5) for i in range(5)]
+    skill_matrix_data[col_name] = [i + (index % 5) if (i + index) % 4 != 0 else '-' for i in range(5)]
 
 skill_df = pd.DataFrame(skill_matrix_data)
 
-# Sample Employee Data with Paygrade only
-dummy_employees = {
-    "E101": {"Name": "Alice", "Paygrade": "PG2"},
-    "E102": {"Name": "Bob", "Paygrade": "PG3"},
-    "E103": {"Name": "Charlie", "Paygrade": "PG4"}
-}
+# Employee DataFrame with Paygrade
+df_employee = pd.DataFrame({
+    "Employee ID": ["E101", "E102", "E103"],
+    "Name": ["Alice", "Bob", "Charlie"],
+    "Paygrade": ["PG2", "PG3", "PG4"]
+})
 
 # Streamlit App
 st.set_page_config(layout="wide")
@@ -50,15 +50,15 @@ This portal allows employees to visualize career progression and identify skill 
 # Step 1: User inputs Employee ID
 employee_id = st.text_input("Enter your Employee ID:", value="E101")
 
-if employee_id in dummy_employees:
-    employee = dummy_employees[employee_id]
-    st.success(f"Welcome, {employee['Name']}! Your paygrade is: {employee['Paygrade']}")
+if employee_id in df_employee["Employee ID"].values:
+    employee_row = df_employee[df_employee["Employee ID"] == employee_id].iloc[0]
+    st.success(f"Welcome, {employee_row['Name']}! Your paygrade is: {employee_row['Paygrade']}")
 else:
     st.warning("Employee ID not found. Using default user.")
-    employee = dummy_employees["E101"]
+    employee_row = df_employee.iloc[0]
 
 # Step 2: User selects current role based on paygrade
-available_roles = role_df[role_df['Paygrade'] == employee['Paygrade']]['Role'].tolist()
+available_roles = role_df[role_df['Paygrade'] == employee_row['Paygrade']]['Role'].tolist()
 current_role = st.selectbox("Select your current role (based on paygrade):", available_roles)
 
 # Get current role skill profile
@@ -96,9 +96,15 @@ if selected_new_role:
     new_info = role_df[role_df['Role'] == selected_new_role].iloc[0]
     new_col = f"{new_info['Role']} & {new_info['Band']} & {new_info['Paygrade']}"
 
-    gap_df = skill_df[["Skill", current_col, new_col]]
+    gap_df = skill_df[["Skill", current_col, new_col]].copy()
     gap_df.columns = ["Skill", "Your Level", "Required Level"]
-    gap_df["Gap"] = gap_df["Required Level"] - gap_df["Your Level"]
+
+    def compute_gap(row):
+        if row["Required Level"] == '-' or row["Your Level"] == '-':
+            return "New Skill" if row["Your Level"] == '-' and row["Required Level"] != '-' else "N/A"
+        return int(row["Required Level"]) - int(row["Your Level"])
+
+    gap_df["Gap"] = gap_df.apply(compute_gap, axis=1)
     st.table(gap_df)
 else:
     st.info("Click on any role above to compare skill requirements with your current role.")
