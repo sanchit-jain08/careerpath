@@ -46,11 +46,13 @@ st.markdown("""
 <style>
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(6, 200px);
-    grid-auto-rows: 120px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
-    justify-content: center;
     padding: 20px;
+    justify-items: center;
+}
+.level-block {
+    margin-bottom: 40px;
 }
 .role-box {
     border: 1px solid #ccc;
@@ -61,6 +63,7 @@ st.markdown("""
     font-size: 14px;
     text-align: center;
     font-weight: 500;
+    width: 180px;
 }
 .Technical { background-color: #e3f2fd; }
 .Analytical { background-color: #fff3e0; }
@@ -70,14 +73,17 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("### Visual Career Progression Map")
-st.markdown('<div class="grid-container">', unsafe_allow_html=True)
 
-# Sort by level, then role
-sorted_roles = role_df.sort_values(by=["Paygrade Level", "Role"])
-for _, row in sorted_roles.iterrows():
-    box = f"<div class='role-box {row['Category']}'>{row['Role']}<br><small>({row['Paygrade']})</small></div>"
-    st.markdown(box, unsafe_allow_html=True)
+# Sort by level and group
+grouped = role_df.groupby("Paygrade Level")
 
-st.markdown('</div>', unsafe_allow_html=True)
+for level in sorted(grouped.groups.keys()):
+    st.markdown(f"#### Paygrade Level {level}")
+    st.markdown('<div class="grid-container level-block">', unsafe_allow_html=True)
+    level_roles = grouped.get_group(level).sort_values("Role")
+    for _, row in level_roles.iterrows():
+        box = f"<div class='role-box {row['Category']}'>{row['Role']}<br><small>({row['Paygrade']})</small></div>"
+        st.markdown(box, unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-st.info("This view visually organizes career pathways by paygrade level and department grouping. You can extend this with arrows or modals for deeper interactivity.")
+st.info("Roles are grouped by Paygrade Level and displayed side-by-side where applicable. Colors indicate department category.")
