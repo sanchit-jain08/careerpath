@@ -124,3 +124,39 @@ if selected_new_role:
         st.warning("Cannot compare roles below your current paygrade level.")
 else:
     st.info("Click on any eligible role above to compare skill requirements with your current role.")
+
+
+
+from graphviz import Digraph
+
+# Create a directed graph
+dot = Digraph()
+
+# Add nodes for each role using Paygrade Level for positioning
+for level in sorted(grouped.groups.keys()):
+    roles = grouped.get_group(level)
+    for _, row in roles.iterrows():
+        node_id = f"{row['Role']} ({row['Paygrade']})"
+        dot.node(node_id, node_id)
+
+# Add horizontal edges (within same level)
+for level in sorted(grouped.groups.keys()):
+    roles = grouped.get_group(level).reset_index(drop=True)
+    for i in range(len(roles)-1):
+        src = f"{roles.loc[i, 'Role']} ({roles.loc[i, 'Paygrade']})"
+        dst = f"{roles.loc[i+1, 'Role']} ({roles.loc[i+1, 'Paygrade']})"
+        dot.edge(src, dst, constraint='false')  # horizontal connections
+
+# Add vertical edges (progression from lower to higher levels)
+role_map = role_df.set_index(["Role", "Paygrade Level"])
+for idx, row in role_df.iterrows():
+    current_id = f"{row['Role']} ({row['Paygrade']})"
+    next_level = row["Paygrade Level"] + 1
+    next_roles = role_df[role_df["Paygrade Level"] == next_level]
+    for _, next_row in next_roles.iterrows():
+        next_id = f"{next_row['Role']} ({next_row['Paygrade']})"
+        dot.edge(current_id, next_id)
+
+# Display the graph
+st.graphviz_chart(dot)
+
