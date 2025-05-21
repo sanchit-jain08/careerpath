@@ -44,15 +44,13 @@ role_df['Category'] = role_df['Department'].apply(categorize)
 # CSS Styling
 st.markdown("""
 <style>
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    padding: 20px;
-    justify-items: center;
-}
 .level-block {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
     margin-bottom: 40px;
+    justify-content: flex-start;
+    padding-left: 20px;
 }
 .role-box {
     border: 1px solid #ccc;
@@ -79,11 +77,11 @@ grouped = role_df.groupby("Paygrade Level")
 
 for level in sorted(grouped.groups.keys()):
     st.markdown(f"#### Paygrade Level {level}")
-    st.markdown('<div class="grid-container level-block">', unsafe_allow_html=True)
+    st.markdown('<div class="level-block">', unsafe_allow_html=True)
     level_roles = grouped.get_group(level).sort_values("Role")
     for _, row in level_roles.iterrows():
         box = f"<div class='role-box {row['Category']}'>{row['Role']}<br><small>({row['Paygrade']})</small></div>"
         st.markdown(box, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-st.info("Roles are grouped by Paygrade Level and displayed side-by-side where applicable. Colors indicate department category.")
+st.info("Roles are grouped by Paygrade Level and now correctly displayed side-by-side using horizontal layout.")
