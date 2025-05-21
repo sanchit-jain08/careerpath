@@ -75,39 +75,16 @@ st.markdown("### Career Pathway")
 # Step 3: Display career path with role highlights and interactivity
 selected_new_role = None
 
-# Inject CSS for horizontal scrolling and fixed width
-st.markdown("""
-    <style>
-        .scroll-container {
-            display: flex;
-            overflow-x: auto;
-            padding: 10px;
-            gap: 16px;
-        }
-        .expander-wrapper {
-            min-width: 300px;
-            max-width: 300px;
-            flex: 0 0 auto;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-# Display expanders grouped by paygrade level in horizontal rows
 for level in sorted(grouped.groups.keys()):
     st.markdown(f"#### Paygrade Level {level}")
     roles = grouped.get_group(level)
+    cols = st.columns(len(roles))
 
-    # Start horizontal scroll container
-    st.markdown('<div class="scroll-container">', unsafe_allow_html=True)
-
-    for _, row in roles.iterrows():
+    for i, (_, row) in enumerate(roles.iterrows()):
         role_key = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
         highlight = role_key == current_col
-        expander_title = f"{'⭐ ' if highlight else ''}{row['Role']}"
 
-        # Start expander wrapper
-        st.markdown('<div class="expander-wrapper">', unsafe_allow_html=True)
-        with st.expander(expander_title):
+        with cols[i].expander(f"{'⭐ ' if highlight else ''}{row['Role']}"):
             skill_info = skill_df[["Skill", role_key]].rename(columns={role_key: "Proficiency Required"})
             skill_info = skill_info[skill_info["Proficiency Required"] != '-']
             st.table(skill_info)
@@ -120,15 +97,6 @@ for level in sorted(grouped.groups.keys()):
                         "Paygrade": row['Paygrade'],
                         "Level": row['Paygrade Level']
                     }
-        # End expander wrapper
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # End horizontal scroll container
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-
-
 
 # Step 4: Skill Gap Analysis (only for roles at or above current level)
 if selected_new_role:
