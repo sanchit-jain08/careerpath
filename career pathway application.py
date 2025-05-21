@@ -75,28 +75,53 @@ st.markdown("### Career Pathway")
 # Step 3: Display career path with role highlights and interactivity
 selected_new_role = None
 
+# Custom CSS for fixed-width expanders and scroll
+st.markdown("""
+    <style>
+    .scroll-container {
+        display: flex;
+        overflow-x: auto;
+        padding: 10px;
+    }
+    .expander-box {
+        min-width: 300px;
+        max-width: 300px;
+        margin-right: 10px;
+        flex: 0 0 auto;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 for level in sorted(grouped.groups.keys()):
     st.markdown(f"#### Paygrade Level {level}")
     roles = grouped.get_group(level)
-    cols = st.columns(len(roles))
 
-    for i, (_, row) in enumerate(roles.iterrows()):
-        role_key = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
-        highlight = role_key == current_col
+    with st.container():
+        st.markdown('<div class="scroll-container">', unsafe_allow_html=True)
 
-        with cols[i].expander(f"{'⭐ ' if highlight else ''}{row['Role']}"):
-            skill_info = skill_df[["Skill", role_key]].rename(columns={role_key: "Proficiency Required"})
-            skill_info = skill_info[skill_info["Proficiency Required"] != '-']
-            st.table(skill_info)
+        for _, row in roles.iterrows():
+            role_key = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
+            highlight = role_key == current_col
+            expander_label = f"{'⭐ ' if highlight else ''}{row['Role']}"
 
-            if not highlight and row["Paygrade Level"] >= current_level:
-                if st.button(f"Compare Skills with {row['Role']}", key=f"compare_{role_key}"):
-                    selected_new_role = {
-                        "Role": row['Role'],
-                        "Band": row['Band'],
-                        "Paygrade": row['Paygrade'],
-                        "Level": row['Paygrade Level']
-                    }
+            with st.expander(expander_label):
+                st.markdown(f'<div class="expander-box">', unsafe_allow_html=True)
+                skill_info = skill_df[["Skill", role_key]].rename(columns={role_key: "Proficiency Required"})
+                skill_info = skill_info[skill_info["Proficiency Required"] != '-']
+                st.table(skill_info)
+
+                if not highlight and row["Paygrade Level"] >= current_level:
+                    if st.button(f"Compare Skills with {row['Role']}", key=f"compare_{role_key}"):
+                        selected_new_role = {
+                            "Role": row['Role'],
+                            "Band": row['Band'],
+                            "Paygrade": row['Paygrade'],
+                            "Level": row['Paygrade Level']
+                        }
+                st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
 
 # Step 4: Skill Gap Analysis (only for roles at or above current level)
 if selected_new_role:
