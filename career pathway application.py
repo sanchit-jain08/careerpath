@@ -126,44 +126,42 @@ for level in sorted(grouped.groups.keys()):
 
     html_blocks = ""
 
-for _, row in roles.iterrows():
-    role_key = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
-    highlight = role_key == current_col
-    box_header = f"{'⭐ ' if highlight else ''}{row['Role']}"
-    box_color = row['Category']
+    for _, row in roles.iterrows():
+        role_key = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
+        highlight = role_key == current_col
+        box_header = f"{'⭐ ' if highlight else ''}{row['Role']}"
+        box_color = row['Category']
     
-    skill_info = skill_df[["Skill", role_key]].rename(columns={role_key: "Proficiency Required"})
-    skill_info = skill_info[skill_info["Proficiency Required"] != '-']
-    skills_list_html = ''.join([f"<li>{r['Skill']}: {r['Proficiency Required']}</li>" for _, r in skill_info.iterrows()])
+        skill_info = skill_df[["Skill", role_key]].rename(columns={role_key: "Proficiency Required"})
+        skill_info = skill_info[skill_info["Proficiency Required"] != '-']
+        skills_list_html = ''.join([f"<li>{r['Skill']}: {r['Proficiency Required']}</li>" for _, r in skill_info.iterrows()])
     
-    button_html = ""
-    if not highlight and row["Paygrade Level"] >= current_level:
-        compare_key = f"compare_{role_key.replace(' ', '_')}"
-        # Since we can't trigger a Streamlit button from HTML directly, we keep track for fallback
-        if st.button(f"Compare Skills with {row['Role']}", key=compare_key):
-            selected_new_role = {
-                "Role": row['Role'],
-                "Band": row['Band'],
-                "Paygrade": row['Paygrade'],
-                "Level": row['Paygrade Level']
-            }
+        button_html = ""
+        if not highlight and row["Paygrade Level"] >= current_level:
+            compare_key = f"compare_{role_key.replace(' ', '_')}"
+            # Since we can't trigger a Streamlit button from HTML directly, we keep track for fallback
+            if st.button(f"Compare Skills with {row['Role']}", key=compare_key):
+                selected_new_role = {
+                    "Role": row['Role'],
+                    "Band": row['Band'],
+                    "Paygrade": row['Paygrade'],
+                    "Level": row['Paygrade Level']
+                }
 
-    role_html = f"""
-    <div class='role-box {box_color}'>
-        <b>{box_header}</b><br>
-        <small>({row['Paygrade']})</small><br><br>
-        <details>
-          <summary style='cursor:pointer;'>View Skills</summary>
-          <ul style="text-align:left; padding-left:10px;">{skills_list_html}</ul>
-        </details>
-    </div>
-    """
-    html_blocks += role_html
+        role_html = f"""
+        <div class='role-box {box_color}'>
+            <b>{box_header}</b><br>
+            <small>({row['Paygrade']})</small><br><br>
+            <details>
+              <summary style='cursor:pointer;'>View Skills</summary>
+              <ul style="text-align:left; padding-left:10px;">{skills_list_html}</ul>
+            </details>
+        </div>
+        """
+        html_blocks += role_html
 
-st.markdown(f'<div class="level-block">{html_blocks}</div>', unsafe_allow_html=True)
-
-
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="level-block">{html_blocks}</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Step 4: Skill Gap Analysis
 if selected_new_role:
