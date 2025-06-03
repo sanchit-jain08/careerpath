@@ -76,12 +76,33 @@ st.markdown("""
             margin-bottom: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
+        .input-wrapper {
+            background-color: #f5f7fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        label[data-testid="stWidgetLabel"] {
+            font-weight: 600;
+            font-size: 16px !important;
+            color: #333333;
+            margin-bottom: 8px;
+        }
+        input[type="text"] {
+            font-size: 16px !important;
+            padding: 8px 10px !important;
+            border: 1px solid #d4d4d4 !important;
+            border-radius: 6px !important;
+            background-color: #ffffff !important;
+        }
     </style>
     <div class="section-container">
+     <div class="input-wrapper">
 """, unsafe_allow_html=True)
 
 # Step 1: PS Number Input
 employee_id = int(st.text_input("Enter your PS Number:", value="101"))
+st.markdown("</div>", unsafe_allow_html=True)
 
 if employee_id in df_employee["PS Number"].values:
     employee_row = df_employee[df_employee["PS Number"] == employee_id].iloc[0]
