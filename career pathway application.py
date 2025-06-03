@@ -65,7 +65,9 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
+
 # ------------------ Step 1: PS Number Input ------------------ #
+st.markdown("<div class="header-container">", unsafe_allow_html=True)
 employee_id = int(st.text_input("Enter your PS Number:", value="101"))
 
 if employee_id in df_employee["PS Number"].values:
@@ -74,6 +76,7 @@ if employee_id in df_employee["PS Number"].values:
 else:
     st.warning("PS Number not found. Using default user.")
     employee_row = df_employee.iloc[0]
+st.markdown("</div>", unsafe_allow_html=True)
 
 # ------------------ Step 2: Role Selection ------------------ #
 available_roles = role_df[role_df['Paygrade'] == employee_row['Paygrade']]['Role'].tolist()
