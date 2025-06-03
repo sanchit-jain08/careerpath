@@ -38,8 +38,33 @@ df_employee = pd.DataFrame({
 
 # ------------------ Streamlit Config ------------------ #
 st.set_page_config(layout="wide")
-st.title("🚀 Career Pathway Portal")
-st.markdown("This portal helps to visualize career progression and identify skill gaps for their desired roles.")
+st.markdown("""
+    <style>
+        .header-container {
+            background-color: #f0f2f6;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .header-title {
+            font-size: calc(1.5rem + 1vw);
+            font-weight: 800;
+            color: #003366;
+            margin-bottom: 10px;
+        }
+        .header-subtitle {
+            font-size: calc(0.9rem + 0.3vw);
+            color: #333333;
+        }
+    </style>
+    <div class="header-container">
+        <div class="header-title">🚀 Career Pathway Portal</div>
+        <div class="header-subtitle">This portal helps to visualize career progression and identify skill gaps for their desired roles.</div>
+    </div>
+""", unsafe_allow_html=True)
+
 
 # ------------------ Step 1: PS Number Input ------------------ #
 employee_id = int(st.text_input("Enter your PS Number:", value="101"))
