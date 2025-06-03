@@ -43,7 +43,8 @@ st.markdown("""
         .header-container {
             background-color: #f0f2f6;
             padding: 30px;
-            border-radius: 10px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
             margin-bottom: 0px;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
