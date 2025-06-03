@@ -90,7 +90,7 @@ for level in sorted(grouped.groups.keys()):
                 if st.button(f"🔍 Compare Skills", key=f"compare_{role_key}"):
                     st.query_params.update(compare=role_key)
                     st.rerun()
-    st.markdown("---")
+    st.markdown("<hr style='margin: 5px 0; border: none; height: 1px; background-color: #ccc;'>", unsafe_allow_html=True)
 
 # ------------------ Step 4: Check for Compare Param ------------------ #
 if selected_key:
