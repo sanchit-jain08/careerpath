@@ -46,7 +46,7 @@ This portal helps visualize career progression and highlights the **skill gaps**
 """)
 
 # --- Step 1: Employee ID Input ---
-employee_id = st.text_input("Enter your PS Number:", value="8")
+employee_id = st.text_input("Enter your PS Number:", value="101")
 try:
     employee_id = int(employee_id)
 except:
@@ -62,7 +62,7 @@ else:
 
 # --- Step 2: Select Role ---
 available_roles = role_df[role_df['Paygrade'] == employee_row['Paygrade']]['Role'].tolist()
-current_role = st.selectbox("🎯 Select your current role (based on Paygrade):", available_roles, index=0)
+current_role = st.selectbox("🎯 Select your current role:", available_roles, index=0)
 
 current_info = role_df[(role_df['Role'] == current_role) & (role_df['Paygrade'] == employee_row['Paygrade'])].iloc[0]
 current_col = f"{current_info['Role']} & {current_info['Band']} & {current_info['Paygrade']}"
