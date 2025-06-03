@@ -59,14 +59,13 @@ st.markdown("""
         .input-wrapper {
             background-color: #f0f2f6;
             padding: 15px 20px;
-            margin-top: 15px;
         }
         label[data-testid="stWidgetLabel"] {
             font-weight: 600;
             background-color: #f0f2f6;
             font-size: 16px !important;
             color: #333333;
-            margin-bottom: 8px;
+            padding: 8px
         }
         input[type="text"] {
             font-size: 16px !important;
