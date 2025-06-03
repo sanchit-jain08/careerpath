@@ -59,7 +59,7 @@ st.markdown("""
             color: #333333;
         }
         .input-wrapper {
-            background-color: #f5f7fa;
+            background-color: #f0f2f6;
             padding: 15px 20px;
             border-radius: 8px;
             margin-top: 15px;
