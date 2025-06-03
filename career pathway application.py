@@ -65,44 +65,8 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-
-# ------------------ Styled Section Header ------------------ #
-st.markdown("""
-    <style>
-        .section-container {
-            background-color: #f0f2f6;
-            padding: 20px 30px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .input-wrapper {
-            background-color: #f5f7fa;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-        label[data-testid="stWidgetLabel"] {
-            font-weight: 600;
-            font-size: 16px !important;
-            color: #333333;
-            margin-bottom: 8px;
-        }
-        input[type="text"] {
-            font-size: 16px !important;
-            padding: 8px 10px !important;
-            border: 1px solid #d4d4d4 !important;
-            border-radius: 6px !important;
-            background-color: #ffffff !important;
-        }
-    </style>
-    <div class="section-container">
-     <div class="input-wrapper">
-""", unsafe_allow_html=True)
-
-# Step 1: PS Number Input
+# ------------------ Step 1: PS Number Input ------------------ #
 employee_id = int(st.text_input("Enter your PS Number:", value="101"))
-st.markdown("</div>", unsafe_allow_html=True)
 
 if employee_id in df_employee["PS Number"].values:
     employee_row = df_employee[df_employee["PS Number"] == employee_id].iloc[0]
@@ -111,13 +75,7 @@ else:
     st.warning("PS Number not found. Using default user.")
     employee_row = df_employee.iloc[0]
 
-st.markdown("</div>", unsafe_allow_html=True)
-
-# Step 2: Role Selection
-st.markdown("""
-    <div class="section-container">
-""", unsafe_allow_html=True)
-
+# ------------------ Step 2: Role Selection ------------------ #
 available_roles = role_df[role_df['Paygrade'] == employee_row['Paygrade']]['Role'].tolist()
 current_role = st.selectbox("Select your current role:", available_roles, index=0)
 
@@ -125,9 +83,6 @@ current_info = role_df[(role_df['Role'] == current_role) & (role_df['Paygrade'] 
 current_col = f"{current_info['Role']} & {current_info['Band']} & {current_info['Paygrade']}"
 current_level = current_info['Paygrade Level']
 
-st.markdown("</div>", unsafe_allow_html=True)
-
-# Save common context
 grouped = role_df.groupby("Paygrade Level")
 query_params = st.query_params
 selected_key = query_params.get("compare", [None])[0] if isinstance(query_params.get("compare"), list) else query_params.get("compare")
