@@ -92,11 +92,11 @@ for level in sorted(grouped.groups.keys()):
                 try:
                     val = int(val)
                     if val >= 4:
-                        return 'background-color: #a1d99b'  # green
+                        return 'background-color: #a1d99b'
                     elif val >= 2:
-                        return 'background-color: #fdae6b'  # orange
+                        return 'background-color: #fdae6b'
                     else:
-                        return 'background-color: #fcbba1'  # red
+                        return 'background-color: #fcbba1'
                 except:
                     return ''
 
@@ -111,6 +111,10 @@ for level in sorted(grouped.groups.keys()):
                         "Paygrade": row['Paygrade'],
                         "Level": row['Paygrade Level']
                     }
+
+    # ➕ Horizontal line after each level group
+    st.markdown("---")
+
 
 # --- Step 4: Skill Gap Analysis ---
 if selected_new_role:
