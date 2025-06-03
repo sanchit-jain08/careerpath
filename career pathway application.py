@@ -39,7 +39,7 @@ df_employee = pd.DataFrame({
 # ------------------ Streamlit Config ------------------ #
 st.set_page_config(layout="wide")
 st.title("🚀 Career Pathway Portal")
-st.markdown("This portal allows employees to visualize career progression and identify skill gaps for their desired roles.")
+st.markdown("This portal helps to visualize career progression and identify skill gaps for their desired roles.")
 
 # ------------------ Step 1: PS Number Input ------------------ #
 employee_id = int(st.text_input("Enter your PS Number:", value="101"))
@@ -53,7 +53,7 @@ else:
 
 # ------------------ Step 2: Role Selection ------------------ #
 available_roles = role_df[role_df['Paygrade'] == employee_row['Paygrade']]['Role'].tolist()
-current_role = st.selectbox("Select your current role (based on paygrade):", available_roles, index=0)
+current_role = st.selectbox("Select your current role:", available_roles, index=0)
 
 current_info = role_df[(role_df['Role'] == current_role) & (role_df['Paygrade'] == employee_row['Paygrade'])].iloc[0]
 current_col = f"{current_info['Role']} & {current_info['Band']} & {current_info['Paygrade']}"
@@ -68,7 +68,7 @@ selected_new_role = None
 st.markdown("### 🧭 Career Pathway")
 for level in sorted(grouped.groups.keys()):
     roles = grouped.get_group(level)
-    st.markdown(f"#### 🪜 Paygrade Level {level}")
+    st.markdown(f"#### Paygrade Level {level}")
     cols = st.columns(len(roles))
 
     for i, (_, row) in enumerate(roles.iterrows()):
