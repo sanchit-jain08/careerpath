@@ -83,7 +83,7 @@ for level in sorted(grouped.groups.keys()):
                 return 'background-color: lightgrey'
     
 
-            styled_df = skill_info.style.applymap(color_level, subset=["Required Level"])
+            styled_df = skill_info
             st.dataframe(styled_df, use_container_width=True, height=280)
 
             if not highlight and row["Paygrade Level"] >= current_level:
