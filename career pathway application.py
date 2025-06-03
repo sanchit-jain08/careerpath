@@ -74,8 +74,7 @@ st.markdown("""
             font-size: 16px !important;
             padding: 8px 10px !important;
             border: 1px solid #d4d4d4 !important;
-            border-radius: 6px !important;
-            background-color: #ffffff !important;
+            background-color: #f0f2f6 !important;
         }
     </style>
     <div class="header-container">
