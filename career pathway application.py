@@ -80,18 +80,8 @@ for level in sorted(grouped.groups.keys()):
             skill_info = skill_info[skill_info["Required Level"] != '-']
 
             def color_level(val):
-                if val == '-':
-                    return 'background-color: lightgrey'
-                try:
-                    val = int(val)
-                    if val >= 4:
-                        return 'background-color: #a1d99b'
-                    elif val >= 2:
-                        return 'background-color: #fdae6b'
-                    else:
-                        return 'background-color: #fcbba1'
-                except:
-                    return ''
+                return 'background-color: lightgrey'
+    
 
             styled_df = skill_info.style.applymap(color_level, subset=["Required Level"])
             st.dataframe(styled_df, use_container_width=True, height=280)
