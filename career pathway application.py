@@ -95,7 +95,6 @@ st.markdown("</div>", unsafe_allow_html=True)
 # Step 2: Role Selection
 st.markdown("""
     <div class="section-container">
-        <div class="section-title">🎯 Step 2: Select Your Current Role</div>
 """, unsafe_allow_html=True)
 
 available_roles = role_df[role_df['Paygrade'] == employee_row['Paygrade']]['Role'].tolist()
