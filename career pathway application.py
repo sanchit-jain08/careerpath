@@ -138,11 +138,11 @@ if selected_new_role:
 
         def gap_color(val):
             if val == "New Skill":
-                return "background-color: #f8d7da"
+                return "background-color: #fa9b3c"
             elif val == "Good to have":
-                return "background-color: #fff3cd"
+                return "background-color: #3cfa68"
             elif isinstance(val, int) and val > 0:
-                return "background-color: #d1ecf1"
+                return "background-color: #facc3c"
             else:
                 return ""
 
