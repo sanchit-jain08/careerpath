@@ -58,6 +58,25 @@ st.markdown("""
             font-size: calc(0.9rem + 0.3vw);
             color: #333333;
         }
+        .input-wrapper {
+            background-color: #f5f7fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        label[data-testid="stWidgetLabel"] {
+            font-weight: 600;
+            font-size: 16px !important;
+            color: #333333;
+            margin-bottom: 8px;
+        }
+        input[type="text"] {
+            font-size: 16px !important;
+            padding: 8px 10px !important;
+            border: 1px solid #d4d4d4 !important;
+            border-radius: 6px !important;
+            background-color: #ffffff !important;
+        }
     </style>
     <div class="header-container">
         <div class="header-title">🚀 Career Pathway Portal</div>
