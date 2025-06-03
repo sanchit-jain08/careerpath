@@ -70,7 +70,7 @@ st.markdown("""
 st.markdown("""
     <style>
         .section-container {
-            background-color: #ffffff;
+            background-color: #f0f2f6;
             padding: 20px 30px;
             border-radius: 10px;
             margin-bottom: 20px;
