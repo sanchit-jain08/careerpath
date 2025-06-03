@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-# --- Sample Role Data ---
+# ------------------ Data ------------------ #
 roles_data = {
     "Role": [
         "Junior Developer", "Developer", "Senior Developer", "Lead Developer", "Architect",
@@ -23,7 +23,6 @@ roles_data = {
 }
 role_df = pd.DataFrame(roles_data)
 
-# --- Sample Skill Matrix ---
 skills = ["Python", "Data Analysis", "Project Management", "System Design", "Communication"]
 skill_matrix_data = {"Skill": skills}
 for index, row in role_df.iterrows():
@@ -31,22 +30,20 @@ for index, row in role_df.iterrows():
     skill_matrix_data[col_name] = [i + (index % 5) if (i + index) % 4 != 0 else '-' for i in range(5)]
 skill_df = pd.DataFrame(skill_matrix_data)
 
-# --- Employee Info ---
 df_employee = pd.DataFrame({
     "PS Number": [101, 102, 103], 
     "Name": ["Alice", "Bob", "Charlie"],
     "Paygrade": ["PG2", "PG3", "PG4"]
 })
 
-# --- Streamlit Setup ---
+# ------------------ Streamlit Config ------------------ #
 st.set_page_config(layout="wide")
 st.title("🚀 Career Pathway Portal")
-st.markdown("""
-This portal allows employees to visualize **career progression** and identify **skill gaps** for their desired roles.
-""")
+st.markdown("This portal allows employees to visualize career progression and identify skill gaps for their desired roles.")
 
-# --- Step 1: User inputs PS Number ---
+# ------------------ Step 1: PS Number Input ------------------ #
 employee_id = int(st.text_input("Enter your PS Number:", value="101"))
+
 if employee_id in df_employee["PS Number"].values:
     employee_row = df_employee[df_employee["PS Number"] == employee_id].iloc[0]
     st.success(f"Welcome, {employee_row['Name']}!")
@@ -54,34 +51,25 @@ else:
     st.warning("PS Number not found. Using default user.")
     employee_row = df_employee.iloc[0]
 
-# --- Step 2: Select current role based on Paygrade ---
+# ------------------ Step 2: Role Selection ------------------ #
 available_roles = role_df[role_df['Paygrade'] == employee_row['Paygrade']]['Role'].tolist()
-st.markdown(
-    """
-    <style>
-    .stSelectbox [data-baseweb="select"] {
-        max-width: 300px;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-    """, unsafe_allow_html=True
-)
-current_role = st.selectbox("Select your current role (based on paygrade):", available_roles, index=0, key='role_select')
+current_role = st.selectbox("Select your current role (based on paygrade):", available_roles, index=0)
 
-# Get current role info
 current_info = role_df[(role_df['Role'] == current_role) & (role_df['Paygrade'] == employee_row['Paygrade'])].iloc[0]
 current_col = f"{current_info['Role']} & {current_info['Band']} & {current_info['Paygrade']}"
 current_level = current_info['Paygrade Level']
 
-# --- Career Pathway ---
-st.markdown("### 📈 Career Pathway Explorer")
 grouped = role_df.groupby("Paygrade Level")
+query_params = st.experimental_get_query_params()
 
+st.markdown("### 🧭 Career Pathway")
+
+selected_key = query_params.get("compare", [None])[0]
 selected_new_role = None
 
+# ------------------ Step 3: Career Ladder ------------------ #
 for level in sorted(grouped.groups.keys()):
     roles = grouped.get_group(level)
-
     st.markdown(f"#### 🪜 Paygrade Level {level}")
     cols = st.columns(len(roles))
 
@@ -99,11 +87,11 @@ for level in sorted(grouped.groups.keys()):
                 try:
                     val = int(val)
                     if val >= 4:
-                        return 'background-color: #a1d99b'  # Green
+                        return 'background-color: #a1d99b'
                     elif val >= 2:
-                        return 'background-color: #fdae6b'  # Orange
+                        return 'background-color: #fdae6b'
                     else:
-                        return 'background-color: #fcbba1'  # Red
+                        return 'background-color: #fcbba1'
                 except:
                     return ''
 
@@ -112,21 +100,37 @@ for level in sorted(grouped.groups.keys()):
 
             if not highlight and row["Paygrade Level"] >= current_level:
                 if st.button(f"🔍 Compare Skills", key=f"compare_{role_key}"):
-                    selected_new_role = {
-                        "Role": row['Role'],
-                        "Band": row['Band'],
-                        "Paygrade": row['Paygrade'],
-                        "Level": row['Paygrade Level']
-                    }
-
+                    st.experimental_set_query_params(compare=role_key)
+                    st.experimental_rerun()
     st.markdown("---")
 
-# --- Skill Gap Analysis ---
+# ------------------ Step 4: Check for Compare Param ------------------ #
+if selected_key:
+    try:
+        parts = selected_key.split(" & ")
+        role_match = role_df[
+            (role_df['Role'] == parts[0]) &
+            (role_df['Band'] == parts[1]) &
+            (role_df['Paygrade'] == parts[2])
+        ].iloc[0]
+        selected_new_role = {
+            "Role": role_match["Role"],
+            "Band": role_match["Band"],
+            "Paygrade": role_match["Paygrade"],
+            "Level": role_match["Paygrade Level"]
+        }
+    except:
+        selected_new_role = None
+
+# ------------------ Step 5: Skill Gap Section Anchor ------------------ #
+st.markdown('<div id="gap_section"></div>', unsafe_allow_html=True)
+
+# ------------------ Step 6: Skill Gap Analysis ------------------ #
 if selected_new_role:
     new_info = selected_new_role
     if new_info["Level"] >= current_level:
         st.markdown("---")
-        st.subheader(f"🧮 Skill Gap Analysis: {current_role} → {new_info['Role']}")
+        st.subheader(f"🧠 Skill Gap Analysis: {current_role} → {new_info['Role']}")
         new_col = f"{new_info['Role']} & {new_info['Band']} & {new_info['Paygrade']}"
 
         gap_df = skill_df[["Skill", current_col, new_col]].copy()
@@ -143,12 +147,23 @@ if selected_new_role:
 
         gap_df["Gap"] = gap_df.apply(compute_gap, axis=1)
         filtered_gap_df = gap_df[gap_df["Gap"].apply(lambda x: isinstance(x, str) or x > 0)]
-        
+
+        def gap_color(val):
+            if val == "New Skill":
+                return "background-color: #f8d7da"
+            elif val == "Good to have":
+                return "background-color: #fff3cd"
+            elif isinstance(val, int) and val > 0:
+                return "background-color: #d1ecf1"
+            else:
+                return ""
+
         if not filtered_gap_df.empty:
-            st.dataframe(filtered_gap_df, use_container_width=True, height=300)
+            styled_gap = filtered_gap_df.style.applymap(gap_color, subset=["Gap"])
+            st.dataframe(styled_gap, use_container_width=True, height=300)
         else:
-            st.info("✅ No skill gap found for the selected role.")
+            st.info("✅ No skill gaps found for the selected role.")
     else:
-        st.warning("⚠️ Cannot compare roles below your current paygrade level.")
+        st.warning("❌ Cannot compare roles below your current paygrade level.")
 else:
-    st.info("🔍 Click on any eligible role above to compare skill requirements with your current role.")
+    st.info("ℹ️ Click on any eligible role above to compare skill requirements with your current role.")
