@@ -39,10 +39,63 @@ df_employee = pd.DataFrame({
 # ------------------ Streamlit Config ------------------ #
 st.set_page_config(layout="wide")
 st.title("🚀 Career Pathway Portal")
-st.markdown("This portal helps to visualize career progression and identify skill gaps for their desired roles.")
+st.markdown("This portal helps to visualize career progression and identify skill gaps for your desired roles.")
+
+# --- Custom CSS for borders and buttons ---
+st.markdown("""
+    <style>
+    /* Container border for each role expander */
+    .role-expander > div[role="button"] {
+        font-weight: 600;
+        font-size: 1.05em;
+    }
+    .role-content {
+        border: 1px solid #ddd;
+        padding: 10px 15px;
+        border-radius: 6px;
+        margin-top: 5px;
+        background-color: #fafafa;
+    }
+    /* Style for DataFrame tables */
+    .dataframe tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    .dataframe thead tr th {
+        background-color: #4a90e2;
+        color: white;
+        text-align: center;
+    }
+    /* Styled buttons */
+    div.stButton > button {
+        background-color: #4a90e2;
+        color: white;
+        border-radius: 8px;
+        padding: 6px 15px;
+        border: none;
+        transition: background-color 0.3s ease;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    div.stButton > button:hover {
+        background-color: #357ABD;
+    }
+    /* Reduce hr spacing */
+    hr {
+        margin: 10px 0;
+        border: none;
+        height: 1px;
+        background-color: #ccc;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # ------------------ Step 1: PS Number Input ------------------ #
-employee_id = int(st.text_input("Enter your PS Number:", value="101"))
+employee_id_input = st.text_input("Enter your PS Number:", value="101")
+try:
+    employee_id = int(employee_id_input)
+except ValueError:
+    employee_id = None
 
 if employee_id in df_employee["PS Number"].values:
     employee_row = df_employee[df_employee["PS Number"] == employee_id].iloc[0]
@@ -60,12 +113,14 @@ current_col = f"{current_info['Role']} & {current_info['Band']} & {current_info[
 current_level = current_info['Paygrade Level']
 
 grouped = role_df.groupby("Paygrade Level")
+
 query_params = st.query_params
 selected_key = query_params.get("compare", [None])[0] if isinstance(query_params.get("compare"), list) else query_params.get("compare")
 selected_new_role = None
 
 # ------------------ Step 3: Career Ladder ------------------ #
 st.markdown("### 🧭 Career Pathway")
+
 for level in sorted(grouped.groups.keys()):
     roles = grouped.get_group(level)
     st.markdown(f"#### Paygrade Level {level}")
@@ -75,22 +130,30 @@ for level in sorted(grouped.groups.keys()):
         role_key = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
         highlight = role_key == current_col
 
-        with cols[i].expander(f"{'⭐ ' if highlight else ''}{row['Role']} ({row['Paygrade']})"):
-            skill_info = skill_df[["Skill", role_key]].rename(columns={role_key: "Required Level"})
-            skill_info = skill_info[skill_info["Required Level"] != '-']
+        with cols[i]:
+            expander_label = f"{'⭐ ' if highlight else ''}{row['Role']} ({row['Paygrade']})"
+            with st.expander(expander_label, expanded=highlight):
+                st.markdown('<div class="role-content">', unsafe_allow_html=True)
 
-            def color_level(val):
-                return 'background-color: lightgrey'
-    
+                skill_info = skill_df[["Skill", role_key]].rename(columns={role_key: "Required Level"})
+                skill_info = skill_info[skill_info["Required Level"] != '-']
 
-            styled_df = skill_info.style.applymap(color_level, subset=["Required Level"])
-            st.dataframe(styled_df, use_container_width=True, height=280)
+                def color_level(val):
+                    return 'background-color: lightgrey'
 
-            if not highlight and row["Paygrade Level"] >= current_level:
-                if st.button(f"🔍 Compare Skills", key=f"compare_{role_key}"):
-                    st.query_params.update(compare=role_key)
-                    st.rerun()
-    st.markdown("<hr style='margin: 5px 0; border: none; height: 1px; background-color: #ccc;'>", unsafe_allow_html=True)
+                styled_df = skill_info.style.applymap(color_level, subset=["Required Level"])
+                st.dataframe(styled_df, use_container_width=True, height=280)
+
+                # Show Compare button only if not current and paygrade level higher or equal
+                if not highlight and row["Paygrade Level"] >= current_level:
+                    if st.button(f"🔍 Compare Skills", key=f"compare_{role_key}"):
+                        # Update URL param and rerun with scrolling
+                        st.experimental_set_query_params(compare=role_key)
+                        st.experimental_rerun()
+
+                st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("<hr>", unsafe_allow_html=True)
 
 # ------------------ Step 4: Check for Compare Param ------------------ #
 if selected_key:
