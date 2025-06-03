@@ -69,37 +69,40 @@ st.markdown("### 🧭 Career Pathway")
 for level in sorted(grouped.groups.keys()):
     roles = grouped.get_group(level)
     st.markdown(f"#### 🪜 Paygrade Level {level}")
-    cols = st.columns(len(roles))
+        role_list = list(roles.iterrows())
+    for i in range(0, len(role_list), 2):
+        cols = st.columns(2)
+        for j in range(2):
+            if i + j < len(role_list):
+                _, row = role_list[i + j]
+                role_key = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
+                highlight = role_key == current_col
 
-    for i, (_, row) in enumerate(roles.iterrows()):
-        role_key = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
-        highlight = role_key == current_col
+                with cols[j].expander(f"{'⭐ ' if highlight else ''}{row['Role']} ({row['Paygrade']})"):
+                    skill_info = skill_df[["Skill", role_key]].rename(columns={role_key: "Required Level"})
+                    skill_info = skill_info[skill_info["Required Level"] != '-']
 
-        with cols[i].expander(f"{'⭐ ' if highlight else ''}{row['Role']} ({row['Paygrade']})"):
-            skill_info = skill_df[["Skill", role_key]].rename(columns={role_key: "Required Level"})
-            skill_info = skill_info[skill_info["Required Level"] != '-']
+                    def color_level(val):
+                        if val == '-':
+                            return 'background-color: lightgrey'
+                        try:
+                            val = int(val)
+                            if val >= 4:
+                                return 'background-color: #a1d99b'
+                            elif val >= 2:
+                                return 'background-color: #fdae6b'
+                            else:
+                                return 'background-color: #fcbba1'
+                        except:
+                            return ''
 
-            def color_level(val):
-                if val == '-':
-                    return 'background-color: lightgrey'
-                try:
-                    val = int(val)
-                    if val >= 4:
-                        return 'background-color: #a1d99b'
-                    elif val >= 2:
-                        return 'background-color: #fdae6b'
-                    else:
-                        return 'background-color: #fcbba1'
-                except:
-                    return ''
+                    styled_df = skill_info.style.applymap(color_level, subset=["Required Level"])
+                    st.dataframe(styled_df, use_container_width=True, height=280)
 
-            styled_df = skill_info.style.applymap(color_level, subset=["Required Level"])
-            st.dataframe(styled_df, use_container_width=True, height=280)
-
-            if not highlight and row["Paygrade Level"] >= current_level:
-                if st.button(f"🔍 Compare Skills", key=f"compare_{role_key}"):
-                    st.query_params.update(compare=role_key)
-                    st.rerun()
+                    if not highlight and row["Paygrade Level"] >= current_level:
+                        if st.button(f"🔍 Compare Skills", key=f"compare_{role_key}"):
+                            st.query_params.update(compare=role_key)
+                            st.rerun()
     st.markdown("---")
 
 # ------------------ Step 4: Check for Compare Param ------------------ #
