@@ -76,15 +76,8 @@ st.markdown("""
             margin-bottom: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .section-title {
-            font-size: calc(1.2rem + 0.5vw);
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 10px;
-        }
     </style>
     <div class="section-container">
-        <div class="section-title">🔍 Step 1: Identify Yourself</div>
 """, unsafe_allow_html=True)
 
 # Step 1: PS Number Input
