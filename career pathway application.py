@@ -81,7 +81,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-st.markdown("<hr style='height: 1px; background-color: #f0f2f6;'>", unsafe_allow_html=True)
+st.markdown("<hr style='margin: 0px; height: 1px; background-color: #f0f2f6;'>", unsafe_allow_html=True)
 # ------------------ Step 1: PS Number Input ------------------ #
 st.markdown("""<div class="header-container">""", unsafe_allow_html=True)
 employee_id = int(st.text_input("Enter your PS Number:", value="101"))
