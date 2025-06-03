@@ -137,13 +137,6 @@ if selected_new_role:
         filtered_gap_df = gap_df[gap_df["Gap"].apply(lambda x: isinstance(x, str) or x > 0)]
 
         def gap_color(val):
-            if val == "New Skill":
-                return "background-color: #fa9b3c"
-            elif val == "Good to have":
-                return "background-color: #3cfa68"
-            elif isinstance(val, int) and val > 0:
-                return "background-color: #facc3c"
-            else:
                 return ""
 
         if not filtered_gap_df.empty:
