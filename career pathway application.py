@@ -81,7 +81,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-
+st.markdown("<hr style='margin: 5px 0; border: none; height: 1px; background-color: #ccc;'>", unsafe_allow_html=True)
 # ------------------ Step 1: PS Number Input ------------------ #
 st.markdown("""<div class="header-container">""", unsafe_allow_html=True)
 employee_id = int(st.text_input("Enter your PS Number:", value="101"))
@@ -94,6 +94,7 @@ else:
     employee_row = df_employee.iloc[0]
 st.markdown("</div>", unsafe_allow_html=True)
 
+st.markdown("<hr style='margin: 5px 0; border: none; height: 1px; background-color: #ccc;'>", unsafe_allow_html=True)
 # ------------------ Step 2: Role Selection ------------------ #
 available_roles = role_df[role_df['Paygrade'] == employee_row['Paygrade']]['Role'].tolist()
 current_role = st.selectbox("Select your current role:", available_roles, index=0)
