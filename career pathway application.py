@@ -60,14 +60,12 @@ current_col = f"{current_info['Role']} & {current_info['Band']} & {current_info[
 current_level = current_info['Paygrade Level']
 
 grouped = role_df.groupby("Paygrade Level")
-query_params = st.experimental_get_query_params()
-
-st.markdown("### 🧭 Career Pathway")
-
-selected_key = query_params.get("compare", [None])[0]
+query_params = st.query_params
+selected_key = query_params.get("compare", [None])[0] if isinstance(query_params.get("compare"), list) else query_params.get("compare")
 selected_new_role = None
 
 # ------------------ Step 3: Career Ladder ------------------ #
+st.markdown("### 🧭 Career Pathway")
 for level in sorted(grouped.groups.keys()):
     roles = grouped.get_group(level)
     st.markdown(f"#### 🪜 Paygrade Level {level}")
@@ -100,8 +98,8 @@ for level in sorted(grouped.groups.keys()):
 
             if not highlight and row["Paygrade Level"] >= current_level:
                 if st.button(f"🔍 Compare Skills", key=f"compare_{role_key}"):
-                    st.experimental_set_query_params(compare=role_key)
-                    st.experimental_rerun()
+                    st.query_params.update(compare=role_key)
+                    st.rerun()
     st.markdown("---")
 
 # ------------------ Step 4: Check for Compare Param ------------------ #
