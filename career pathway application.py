@@ -75,7 +75,7 @@ for level in sorted(grouped.groups.keys()):
         role_key = f"{row['Role']} & {row['Band']} & {row['Paygrade']}"
         highlight = role_key == current_col
 
-        with cols[i].expander(f"{'⭐ ' if highlight else ''}{row['Role']} ({row['Paygrade']})"):
+        with cols[i].expander(f"{'⭐ ' if highlight else ''}{row['Role']}"):
             skill_info = skill_df[["Skill", role_key]].rename(columns={role_key: "Required Level"})
             skill_info = skill_info[skill_info["Required Level"] != '-']
 
