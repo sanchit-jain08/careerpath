@@ -89,7 +89,7 @@ if employee_id in df_employee["PS Number"].values:
 else:
     st.warning("PS Number not found. Using default user.")
     employee_row = df_employee.iloc[0]
-st.markdown("</div>", unsafe_allow_html=True)
+
 
 st.markdown("<hr style='margin: 5px 0; border: none; height: 1px; background-color: #f0f2f6;'>", unsafe_allow_html=True)
 # ------------------ Step 2: Role Selection ------------------ #
@@ -153,6 +153,7 @@ if selected_key:
         selected_new_role = None
 
 # ------------------ Step 5: Skill Gap Section Anchor ------------------ #
+st.markdown("</div>", unsafe_allow_html=True)
 st.markdown('<div id="gap_section"></div>', unsafe_allow_html=True)
 
 # ------------------ Step 6: Skill Gap Analysis ------------------ #
